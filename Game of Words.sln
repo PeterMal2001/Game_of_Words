@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Game of Words", "Game of Words\Game of Words.pyproj", "{49CD6784-43E8-486F-AFA4-FFC03862DAAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49CD6784-43E8-486F-AFA4-FFC03862DAAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49CD6784-43E8-486F-AFA4-FFC03862DAAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5CB874F7-1AE1-49C4-8B95-F2A4A36E1E90}
+	EndGlobalSection
+EndGlobal
