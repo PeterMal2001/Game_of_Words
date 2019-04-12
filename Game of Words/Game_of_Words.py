@@ -1,6 +1,6 @@
 from sip import delete
 import sys
-from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout
+from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox
 
 class kekapp(QMainWindow):
     def __init__(self):
@@ -25,9 +25,23 @@ class kekapp(QMainWindow):
         self.play.clicked.connect(self.pl_count_inserted)
         self.show()
 
+    def pl_count_inserted(self):
+        self.n=0
+        if self.pl_count.text()=="":
+            msg=QMessageBox.warning(self,"Недостаточно данных","Введите число игроков.")
+        elif self.pl_count.text()=="0":
+            msg=QMessageBox.warning(self,"Ошибка модуля чувства юмора","Данный прэкол не найден в базе данных \"funny jokes\".")
+        else:
+            try:
+                self.n=int(self.pl_count.text())
+            except:
+                msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не число.")
+            if self.n!=0:
+                self.phase2()
+
     def phase2(self):
-        n=int(self.pl_count.text())
         print("phase2")
+        print(self.n)
         self.layout.removeWidget(self.lbl1)
         self.layout.removeWidget(self.pl_count)
         self.layout.removeWidget(self.play)
