@@ -7,13 +7,16 @@ class kekapp(QMainWindow):
         super().__init__()
         self.widget=QWidget()
         self.setCentralWidget(self.widget)
+        
+        self.re=False
 
         self.phase1()
 
     def phase1(self):
-        self.layout=QGridLayout()
-        self.widget.setLayout(self.layout)
-        self.layout.setSpacing(10)
+        if self.re==False:
+            self.layout=QGridLayout()
+            self.widget.setLayout(self.layout)
+            self.layout.setSpacing(10)
 
         self.lbl1=QLabel("Введите количество игроков:")
         self.layout.addWidget(self.lbl1,0,0,1,5)
@@ -24,13 +27,15 @@ class kekapp(QMainWindow):
         self.play=QPushButton("Играть")
         self.layout.addWidget(self.play,3,3,1,2)
         self.play.clicked.connect(self.pl_count_inserted)
-        self.show()
+        
+        if self.re==False:
+            self.show()
 
     def pl_count_inserted(self):
         self.n=0
         if self.pl_count.text()=="":
             msg=QMessageBox.warning(self,"Недостаточно данных","Введите число игроков.")
-        elif self.pl_count.text()=="0" or self.pl_count.text=="1":
+        elif self.pl_count.text()=="0" or self.pl_count.text()=="1":
             msg=QMessageBox.warning(self,"Ошибка модуля чувства юмора","Данный прэкол не найден в базе данных \"funny jokes\".")
         else:
             try:
@@ -38,15 +43,19 @@ class kekapp(QMainWindow):
             except:
                 msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не число.")
             if self.n!=0:
-                self.phase2()
+                self.clean_phase1()
 
-    def phase2(self):
+    def clean_phase1(self):
         self.layout.removeWidget(self.lbl1)
         self.layout.removeWidget(self.pl_count)
         self.layout.removeWidget(self.play)
         delete(self.lbl1)
         delete(self.pl_count)
         delete(self.play)
+
+        self.phase2()
+
+    def phase2(self):
 
         self.players=[i+1 for i in range(self.n)]
         self.player=0
@@ -79,11 +88,15 @@ class kekapp(QMainWindow):
             self.players=b
             self.n-=1
             print(self.n)
+            self.get_word.setText("")
             if self.n==1:
                 msg=QMessageBox.information(self,"Игра окончена","Игра окончена, победил игрок "+str(self.players[0])+"! Поздравляю.")
+                self.clean_phase2()
             elif self.player==self.n:
                 self.player=0
-            self.get_word.setText("")
+                self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
+            else:
+                self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
 
     def accept_clk(self):
         if self.get_word.text()=="":
@@ -97,6 +110,24 @@ class kekapp(QMainWindow):
                 self.player=0
             self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
         self.get_word.setText("")
+
+    def clean_phase2(self):
+        self.layout.removeWidget(self.lbl1)
+        self.layout.removeWidget(self.lbl2)
+        self.layout.removeWidget(self.get_word)
+        self.layout.removeWidget(self.concede_btn)
+        self.layout.removeWidget(self.accept_btn)
+        delete(self.lbl1)
+        delete(self.lbl2)
+        delete(self.get_word)
+        delete(self.concede_btn)
+        delete(self.accept_btn)
+        
+        self.re=True
+
+        self.phase1()
+
+
 
 if __name__=="__main__":
     app=QApplication(sys.argv)
