@@ -1,6 +1,6 @@
 from sip import delete
 import sys
-from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox
+from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox,QAction
 
 class kekapp(QMainWindow):
     def __init__(self):
@@ -18,6 +18,19 @@ class kekapp(QMainWindow):
             self.widget.setLayout(self.layout)
             self.layout.setSpacing(10)
 
+            self.loadgame=QAction("Загрузить игру")
+            self.loadgame.triggered.connect(self.loading)
+
+            self.savegame=QAction("Сохранить игру")
+            self.savegame.triggered.connect(self.saving)
+
+            kekbar=self.menuBar()
+            the_game=kekbar.addMenu("Игра")
+            the_game.addAction(self.savegame)
+            the_game.addAction(self.loadgame)
+
+        self.savegame.setDisabled(True)
+
         self.lbl1=QLabel("Введите количество игроков:")
         self.layout.addWidget(self.lbl1,0,0,1,5)
 
@@ -30,6 +43,12 @@ class kekapp(QMainWindow):
         
         if self.re==False:
             self.show()
+
+    def saving(self):
+        print("save")
+
+    def loading(self):
+        print("load")
 
     def pl_count_inserted(self):
         self.n=0
@@ -60,6 +79,8 @@ class kekapp(QMainWindow):
         self.players=[i+1 for i in range(self.n)]
         self.player=0
         self.used_words=[]
+
+        self.savegame.setEnabled(True)
 
         self.lbl1=QLabel("Ход игрока "+str(self.players[self.player])+":")
         self.layout.addWidget(self.lbl1,0,0,1,3)
