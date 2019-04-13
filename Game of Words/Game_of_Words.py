@@ -30,8 +30,10 @@ class kekapp(QMainWindow):
             the_game=kekbar.addMenu("Игра")
             the_game.addAction(self.savegame)
             the_game.addAction(self.loadgame)
+
+            self.show()
         else:
-            self.clean_phase2()
+            self.clean_phase()
         
         self.savegame.setDisabled(True)
 
@@ -47,15 +49,41 @@ class kekapp(QMainWindow):
         self.widgets.append(self.play)
         self.layout.addWidget(self.play,3,3,1,2)
         self.play.clicked.connect(self.pl_count_inserted)
-        
-        if self.re==False:
-            self.show()
 
     def saving(self):
-        print("save")
+        self.clean_phase()
+
+        self.lbl1=QLabel("Введите название сохранения")
+        self.widgets.append(self.lbl1)
+        self.layout.addWidget(self.lbl1,0,0,1,5)
+
+        self.save_name=QLineEdit()
+        self.widgets.append(self.save_name)
+        self.layout.addWidget(self.save_name,1,1,1,3)
+
+        self.save=QPushButton("Сохранить")
+        self.widgets.append(self.save)
+        self.layout.addWidget(self.save,2,1,1,3)
+        self.save.clicked.connect(self.save_clk)
+
+    def save_clk(self):
+        try:
+            with open("savedgames/"+self.save_name.text()+".wdsave","xb") as file:
+                for i in [self.players,self.player,self.used_words]:
+                    pickle.dump(i,file)
+                    self.phase2()
+        except FileExistsError:
+            msg=QMessageBox.question(self,"Файл уже существует","Файл с таким именем уже существует.\nПерезаписать?",QMessageBox.Yes|QMessageBox.No,QMessageBox.No)
+            if msg==QMessageBox.Yes:
+                with open("savedgames/"+self.save_name.text()+".wdsave","wb") as file:
+                    for i in [self.players,self.player,self.used_words]:
+                        pickle.dump(i,file)
+                        self.phase2()
 
     def loading(self):
-        print("load")
+        lbl1=QLabel("Выберите сохранение")
+        self.widgets.append(self.lbl1)
+        self.layout.addWidget(self.lbl1,0,0)
 
     def pl_count_inserted(self):
         self.n=0
@@ -69,14 +97,13 @@ class kekapp(QMainWindow):
             except:
                 msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не число.")
             if self.n!=0:
+                self.players=[i+1 for i in range(self.n)]
+                self.player=0
+                self.used_words=[]
                 self.phase2()
 
     def phase2(self):
-        self.clean_phase1()
-
-        self.players=[i+1 for i in range(self.n)]
-        self.player=0
-        self.used_words=[]
+        self.clean_phase()
 
         self.savegame.setEnabled(True)
 
@@ -135,13 +162,7 @@ class kekapp(QMainWindow):
             self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
         self.get_word.setText("")
 
-    def clean_phase1(self):
-        for widget in self.widgets:
-            self.layout.removeWidget(widget)
-            delete(widget)
-        self.widgets=[]
-
-    def clean_phase2(self):
+    def clean_phase(self):
         for widget in self.widgets:
             self.layout.removeWidget(widget)
             delete(widget)
