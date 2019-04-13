@@ -1,5 +1,6 @@
 from sip import delete
 import sys
+import pickle
 from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox,QAction
 
 class kekapp(QMainWindow):
@@ -9,6 +10,7 @@ class kekapp(QMainWindow):
         self.setCentralWidget(self.widget)
         
         self.re=False
+        self.widgets=[]
 
         self.phase1()
 
@@ -28,16 +30,21 @@ class kekapp(QMainWindow):
             the_game=kekbar.addMenu("Игра")
             the_game.addAction(self.savegame)
             the_game.addAction(self.loadgame)
-
+        else:
+            self.clean_phase2()
+        
         self.savegame.setDisabled(True)
 
         self.lbl1=QLabel("Введите количество игроков:")
+        self.widgets.append(self.lbl1)
         self.layout.addWidget(self.lbl1,0,0,1,5)
 
         self.pl_count=QLineEdit()
+        self.widgets.append(self.pl_count)
         self.layout.addWidget(self.pl_count,1,1,1,3)
 
         self.play=QPushButton("Играть")
+        self.widgets.append(self.play)
         self.layout.addWidget(self.play,3,3,1,2)
         self.play.clicked.connect(self.pl_count_inserted)
         
@@ -62,19 +69,10 @@ class kekapp(QMainWindow):
             except:
                 msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не число.")
             if self.n!=0:
-                self.clean_phase1()
-
-    def clean_phase1(self):
-        self.layout.removeWidget(self.lbl1)
-        self.layout.removeWidget(self.pl_count)
-        self.layout.removeWidget(self.play)
-        delete(self.lbl1)
-        delete(self.pl_count)
-        delete(self.play)
-
-        self.phase2()
+                self.phase2()
 
     def phase2(self):
+        self.clean_phase1()
 
         self.players=[i+1 for i in range(self.n)]
         self.player=0
@@ -83,19 +81,24 @@ class kekapp(QMainWindow):
         self.savegame.setEnabled(True)
 
         self.lbl1=QLabel("Ход игрока "+str(self.players[self.player])+":")
+        self.widgets.append(self.lbl1)
         self.layout.addWidget(self.lbl1,0,0,1,3)
 
         self.lbl2=QLabel("Введите слово.")
+        self.widgets.append(self.lbl2)
         self.layout.addWidget(self.lbl2,1,1,1,3)
 
         self.get_word=QLineEdit()
+        self.widgets.append(self.get_word)
         self.layout.addWidget(self.get_word,2,0,1,5)
 
         self.concede_btn=QPushButton("Сдаться")
+        self.widgets.append(self.concede_btn)
         self.layout.addWidget(self.concede_btn,3,0,1,2)
         self.concede_btn.clicked.connect(self.concede_clk)
 
         self.accept_btn=QPushButton("Ввести")
+        self.widgets.append(self.accept_btn)
         self.layout.addWidget(self.accept_btn,3,3,1,2)
         self.accept_btn.clicked.connect(self.accept_clk)
 
@@ -108,11 +111,11 @@ class kekapp(QMainWindow):
                 b.append(i)
             self.players=b
             self.n-=1
-            print(self.n)
             self.get_word.setText("")
             if self.n==1:
                 msg=QMessageBox.information(self,"Игра окончена","Игра окончена, победил игрок "+str(self.players[0])+"! Поздравляю.")
-                self.clean_phase2()
+                self.re=True
+                self.phase1()
             elif self.player==self.n:
                 self.player=0
                 self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
@@ -132,23 +135,17 @@ class kekapp(QMainWindow):
             self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
         self.get_word.setText("")
 
+    def clean_phase1(self):
+        for widget in self.widgets:
+            self.layout.removeWidget(widget)
+            delete(widget)
+        self.widgets=[]
+
     def clean_phase2(self):
-        self.layout.removeWidget(self.lbl1)
-        self.layout.removeWidget(self.lbl2)
-        self.layout.removeWidget(self.get_word)
-        self.layout.removeWidget(self.concede_btn)
-        self.layout.removeWidget(self.accept_btn)
-        delete(self.lbl1)
-        delete(self.lbl2)
-        delete(self.get_word)
-        delete(self.concede_btn)
-        delete(self.accept_btn)
-        
-        self.re=True
-
-        self.phase1()
-
-
+        for widget in self.widgets:
+            self.layout.removeWidget(widget)
+            delete(widget)
+        self.widgets=[]
 
 if __name__=="__main__":
     app=QApplication(sys.argv)
