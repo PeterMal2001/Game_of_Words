@@ -1,7 +1,8 @@
 from sip import delete
 import sys
 import pickle
-from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox,QAction
+import os
+from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox,QAction,QScrollArea
 
 class kekapp(QMainWindow):
     def __init__(self):
@@ -83,20 +84,22 @@ class kekapp(QMainWindow):
     def loading(self):
         lbl1=QLabel("Выберите сохранение")
         self.widgets.append(self.lbl1)
-        self.layout.addWidget(self.lbl1,0,0)
+        self.layout.addWidget(self.lbl1,0,0,1,2)
+
+        self.saved_games=os.listdir("savedgames")
 
     def pl_count_inserted(self):
         self.n=0
         if self.pl_count.text()=="":
             msg=QMessageBox.warning(self,"Недостаточно данных","Введите число игроков.")
-        elif self.pl_count.text()=="0" or self.pl_count.text()=="1":
-            msg=QMessageBox.warning(self,"Ошибка модуля чувства юмора","Данный прэкол не найден в базе данных \"funny jokes\".")
         else:
             try:
                 self.n=int(self.pl_count.text())
             except:
                 msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не число.")
-            if self.n!=0:
+            if self.n<0:
+                msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели отрицательное число.")
+            elif self.n!=0:
                 self.players=[i+1 for i in range(self.n)]
                 self.player=0
                 self.used_words=[]
