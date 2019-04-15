@@ -12,6 +12,7 @@ class kekapp(QMainWindow):
         
         self.re=False
         self.widgets=[]
+        self.n=0
 
         self.phase1()
 
@@ -21,6 +22,9 @@ class kekapp(QMainWindow):
             self.widget.setLayout(self.layout)
             self.layout.setSpacing(10)
 
+            self.newgame=QAction("Новая игра")
+            self.newgame.triggered.connect(self.new_game)
+
             self.loadgame=QAction("Загрузить игру")
             self.loadgame.triggered.connect(self.loading)
 
@@ -29,6 +33,7 @@ class kekapp(QMainWindow):
 
             kekbar=self.menuBar()
             the_game=kekbar.addMenu("Игра")
+            the_game.addAction(self.newgame)
             the_game.addAction(self.savegame)
             the_game.addAction(self.loadgame)
 
@@ -50,6 +55,10 @@ class kekapp(QMainWindow):
         self.widgets.append(self.play)
         self.layout.addWidget(self.play,3,3,1,2)
         self.play.clicked.connect(self.pl_count_inserted)
+
+    def new_game(self):
+        self.re=True
+        self.phase1()
 
     def saving(self):
         self.clean_phase()
@@ -79,27 +88,61 @@ class kekapp(QMainWindow):
                 with open("savedgames/"+self.save_name.text()+".wdsave","wb") as file:
                     for i in [self.players,self.player,self.used_words]:
                         pickle.dump(i,file)
-                        self.phase2()
+                self.phase2()
 
     def loading(self):
-        lbl1=QLabel("Выберите сохранение")
+        self.clean_phase()
+        
+        self.lbl1=QLabel("Введите название сохранения")
         self.widgets.append(self.lbl1)
         self.layout.addWidget(self.lbl1,0,0,1,2)
 
-        self.saved_games=os.listdir("savedgames")
+        self.save_name=QLineEdit()
+        self.widgets.append(self.save_name)
+        self.layout.addWidget(self.save_name,1,0,1,2)
+
+        self.save_delete=QPushButton("Удалить")
+        self.widgets.append(self.save_delete)
+        self.layout.addWidget(self.save_delete,2,0)
+        self.save_delete.clicked.connect(self.save_delete_clk)
+        
+        self.save_load=QPushButton("Загрузить")
+        self.widgets.append(self.save_load)
+        self.layout.addWidget(self.save_load,2,1)
+        self.save_load.clicked.connect(self.save_load_clk)
+
+    def save_delete_clk(self):
+        if self.save_name.text()+".wdsave" in os.listdir("savedgames"):
+            msg=QMessageBox.question(self,"Вы уверены?","Вы точно хотите удалить это сохранение?",QMessageBox.Yes|QMessageBox.No,QMessageBox.No)
+            if msg==QMessageBox.Yes:
+                os.remove("savedgames/"+self.save_name.text()+".wdsave")
+        else:
+            msg=QMessageBox.information(self,"Ошибка","Данного сохранения не существует.")
+
+    def save_load_clk(self):
+        if self.save_name.text()+".wdsave" in os.listdir("savedgames"):
+            msg=QMessageBox.question(self,"Вы уверены?","Вы точно хотите загрузить это сохранение?",QMessageBox.Yes|QMessageBox.No,QMessageBox.No)
+            if msg==QMessageBox.Yes:
+                with open("savedgames/"+self.save_name.text()+".wdsave","rb") as file:
+                    self.players=pickle.load(file)
+                    self.player=pickle.load(file)
+                    self.used_words=pickle.load(file)
+                self.n=len(self.players)
+                self.phase2()
+        else:
+            msg=QMessageBox.information(self,"Ошибка","Данного сохранения не существует.")
 
     def pl_count_inserted(self):
-        self.n=0
         if self.pl_count.text()=="":
             msg=QMessageBox.warning(self,"Недостаточно данных","Введите число игроков.")
         else:
             try:
                 self.n=int(self.pl_count.text())
             except:
-                msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не число.")
-            if self.n<0:
-                msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели отрицательное число.")
-            elif self.n!=0:
+                msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не целое число, или не число вовсе.")
+            if self.n<=0:
+                msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели отрицательное число или ноль.")
+            else:
                 self.players=[i+1 for i in range(self.n)]
                 self.player=0
                 self.used_words=[]
