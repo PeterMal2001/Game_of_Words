@@ -3,6 +3,7 @@ import sys
 import pickle
 import os
 from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox,QAction,QScrollArea
+from PyQt5.QtGui import QIcon
 
 class kekapp(QMainWindow):
     def __init__(self):
@@ -18,17 +19,20 @@ class kekapp(QMainWindow):
 
     def phase1(self):
         if self.re==False:
+            self.setWindowTitle("Game of Words")
+            self.setWindowIcon(QIcon("logo.png"))
+
             self.layout=QGridLayout()
             self.widget.setLayout(self.layout)
             self.layout.setSpacing(10)
 
-            self.newgame=QAction("Новая игра")
+            self.newgame=QAction(QIcon("attention.png"),"Новая игра")
             self.newgame.triggered.connect(self.new_game)
 
             self.loadgame=QAction("Загрузить игру")
             self.loadgame.triggered.connect(self.loading)
 
-            self.savegame=QAction("Сохранить игру")
+            self.savegame=QAction(QIcon("save.png"),"Сохранить игру")
             self.savegame.triggered.connect(self.saving)
 
             kekbar=self.menuBar()
