@@ -2,6 +2,7 @@ from sip import delete
 import sys
 import pickle
 import os
+from wordchecker import wordcheck
 from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox,QAction,QScrollArea
 from PyQt5.QtGui import QIcon
 
@@ -204,12 +205,14 @@ class kekapp(QMainWindow):
             msg=QMessageBox.information(self,"Некорректный ввод","Введите слово")
         if self.get_word.text() in self.used_words:
             msg=QMessageBox.information(self,"Уже было","Данное слово уже было введено")
-        else:
+        elif wordcheck(self.get_word.text()):
             self.used_words.append(self.get_word.text())
             self.player+=1
             if self.player==self.n:
                 self.player=0
             self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
+        else:
+            msg=QMessageBox.information(self,"Незнакомое слово","Данного слова нет в нашем словаре")
         self.get_word.setText("")
 
     def clean_phase(self):

@@ -22,6 +22,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game_of_Words.py" />
+    <Compile Include="wordchecker.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="attention.png" />
+    <Content Include="logo.png" />
+    <Content Include="qestion.png" />
+    <Content Include="russian.txt" />
+    <Content Include="save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
