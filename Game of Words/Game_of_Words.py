@@ -12,14 +12,14 @@ class kekapp(QMainWindow):
         self.widget=QWidget()
         self.setCentralWidget(self.widget)
         
-        self.re=False
+        self.last_phase="init"
         self.widgets=[]
         self.n=0
 
         self.phase1()
 
     def phase1(self):
-        if self.re==False:
+        if self.last_phase=="init":
             self.setWindowTitle("Game of Words")
             self.setWindowIcon(QIcon("logo.png"))
 
@@ -61,8 +61,10 @@ class kekapp(QMainWindow):
         self.layout.addWidget(self.play,3,3,1,2)
         self.play.clicked.connect(self.pl_count_inserted)
 
+        self.last_phase="phase1"
+
     def new_game(self):
-        self.re=True
+        self.last_phase="new game"
         self.phase1()
 
     def saving(self):
@@ -180,6 +182,8 @@ class kekapp(QMainWindow):
         self.layout.addWidget(self.accept_btn,3,3,1,2)
         self.accept_btn.clicked.connect(self.accept_clk)
 
+        self.last_phase="phase1"
+
     def concede_clk(self):
         msg=QMessageBox.question(self,"Сдаться","Вы точно хотите сдаться?",QMessageBox.Yes|QMessageBox.No,QMessageBox.No)
         if msg==QMessageBox.Yes:
@@ -192,7 +196,7 @@ class kekapp(QMainWindow):
             self.get_word.setText("")
             if self.n==1:
                 msg=QMessageBox.information(self,"Игра окончена","Игра окончена, победил игрок "+str(self.players[0])+"! Поздравляю.")
-                self.re=True
+                self.last_phase=True
                 self.phase1()
             elif self.player==self.n:
                 self.player=0
