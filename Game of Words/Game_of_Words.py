@@ -3,7 +3,7 @@ import sys
 import pickle
 import os
 from wordchecker import wordcheck
-from PyQt5.QtWidgets import QApplication,QMainWindow,QWidget,QPushButton,QLineEdit,QLabel,QGridLayout,QMessageBox,QAction,QScrollArea
+from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 
 class kekapp(QMainWindow):
@@ -12,6 +12,7 @@ class kekapp(QMainWindow):
         self.widget=QWidget()
         self.setCentralWidget(self.widget)
         
+        self.par_wordcheck=parameter("wordcheck")
         self.last_phase="init"
         self.widgets=[]
         self.n=0
@@ -28,7 +29,7 @@ class kekapp(QMainWindow):
             self.layout.setSpacing(10)
 
             self.newgame=QAction(QIcon("attention.png"),"Новая игра")
-            self.newgame.triggered.connect(self.new_game)
+            self.newgame.triggered.connect(self.phase1)
 
             self.loadgame=QAction("Загрузить игру")
             self.loadgame.triggered.connect(self.loading)
@@ -36,11 +37,15 @@ class kekapp(QMainWindow):
             self.savegame=QAction(QIcon("save.png"),"Сохранить игру")
             self.savegame.triggered.connect(self.saving)
 
+            self.settings=QAction(QIcon("settings.png"),"Настройки")
+            self.settings.triggered.connect(self.settings_phase)
+
             kekbar=self.menuBar()
             the_game=kekbar.addMenu("Игра")
             the_game.addAction(self.newgame)
             the_game.addAction(self.savegame)
             the_game.addAction(self.loadgame)
+            the_game.addAction(self.settings)
 
             self.show()
         else:
@@ -62,10 +67,6 @@ class kekapp(QMainWindow):
         self.play.clicked.connect(self.pl_count_inserted)
 
         self.last_phase="phase1"
-
-    def new_game(self):
-        self.last_phase="new game"
-        self.phase1()
 
     def saving(self):
         self.clean_phase()
@@ -139,21 +140,41 @@ class kekapp(QMainWindow):
         else:
             msg=QMessageBox.information(self,"Ошибка","Данного сохранения не существует.")
 
+    def settings_phase(self):
+        self.clean_phase()
+
+        self.do_wordcheck=QCheckBox("Выполнять проверку существования слова в словаре")
+        self.widgets.append(self.do_wordcheck)
+        self.layout.addWidget(self.do_wordcheck,0,0,1,2)
+        self.do_wordcheck.setChecked(self.par_wordcheck.value)
+        self.do_wordcheck.stateChanged.connect(self.par_wordcheck.switch)
+
+        self.back_btn=QPushButton("Готово")
+        self.widgets.append(self.back_btn)
+        self.layout.addWidget(self.back_btn,1,1)
+        self.back_btn.clicked.connect(self.goback)
+
+    def goback(self):
+        if self.last_phase=="phase1":
+            self.phase1()
+        elif self.last_phase=="phase2":
+            self.phase2()
+    
     def pl_count_inserted(self):
         if self.pl_count.text()=="":
             msg=QMessageBox.warning(self,"Недостаточно данных","Введите число игроков.")
         else:
             try:
                 self.n=int(self.pl_count.text())
+                if self.n<=0:
+                    msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели отрицательное число или ноль.")
+                else:
+                    self.players=[i+1 for i in range(self.n)]
+                    self.player=0
+                    self.used_words=[]
+                    self.phase2()
             except:
                 msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не целое число, или не число вовсе.")
-            if self.n<=0:
-                msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели отрицательное число или ноль.")
-            else:
-                self.players=[i+1 for i in range(self.n)]
-                self.player=0
-                self.used_words=[]
-                self.phase2()
 
     def phase2(self):
         self.clean_phase()
@@ -182,7 +203,7 @@ class kekapp(QMainWindow):
         self.layout.addWidget(self.accept_btn,3,3,1,2)
         self.accept_btn.clicked.connect(self.accept_clk)
 
-        self.last_phase="phase1"
+        self.last_phase="phase2"
 
     def concede_clk(self):
         msg=QMessageBox.question(self,"Сдаться","Вы точно хотите сдаться?",QMessageBox.Yes|QMessageBox.No,QMessageBox.No)
@@ -196,7 +217,6 @@ class kekapp(QMainWindow):
             self.get_word.setText("")
             if self.n==1:
                 msg=QMessageBox.information(self,"Игра окончена","Игра окончена, победил игрок "+str(self.players[0])+"! Поздравляю.")
-                self.last_phase=True
                 self.phase1()
             elif self.player==self.n:
                 self.player=0
@@ -209,7 +229,7 @@ class kekapp(QMainWindow):
             msg=QMessageBox.information(self,"Некорректный ввод","Введите слово")
         if self.get_word.text() in self.used_words:
             msg=QMessageBox.information(self,"Уже было","Данное слово уже было введено")
-        elif wordcheck(self.get_word.text()):
+        elif (self.par_wordcheck.value and wordcheck(self.get_word.text())) or not self.par_wordcheck.value:
             self.used_words.append(self.get_word.text())
             self.player+=1
             if self.player==self.n:
@@ -224,6 +244,19 @@ class kekapp(QMainWindow):
             self.layout.removeWidget(widget)
             delete(widget)
         self.widgets=[]
+
+class parameter():
+    def __init__(self,name):
+        self.name=str(name)
+        with open("usersettings/"+self.name+".wprm","br") as file:
+            val=pickle.load(file)
+        self.value=val        
+
+    def switch(self):
+        self.value=not self.value
+        with open("usersettings/"+self.name+".wprm","bw") as file:
+            val=self.value
+            pickle.dump(val,file)
 
 if __name__=="__main__":
     app=QApplication(sys.argv)

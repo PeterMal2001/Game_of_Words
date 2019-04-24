@@ -7,5 +7,6 @@ def wordcheck(word):
             return False
 
 if __name__=="__main__":
-    word=input()
-    print(wordcheck(word))
+    while 1:
+        word=input()
+        print(wordcheck(word))
