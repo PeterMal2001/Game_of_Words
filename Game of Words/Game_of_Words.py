@@ -173,7 +173,7 @@ class kekapp(QMainWindow):
                     self.player=0
                     self.used_words=[]
                     self.phase2()
-            except:
+            except ValueError:
                 msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не целое число, или не число вовсе.")
 
     def phase2(self):
