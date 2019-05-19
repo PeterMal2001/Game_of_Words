@@ -2,7 +2,7 @@ from sip import delete
 import sys
 import pickle
 import os
-from wordchecker import wordcheck
+from wordchecker import wordcheck,lastlettercheck,lastwordset
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 
@@ -13,6 +13,7 @@ class kekapp(QMainWindow):
         self.setCentralWidget(self.widget)
         
         self.par_wordcheck=parameter("wordcheck")
+        self.par_lastlettercheck=parameter("lastlettercheck")
         self.last_phase="init"
         self.widgets=[]
         self.n=0
@@ -87,7 +88,7 @@ class kekapp(QMainWindow):
     def save_clk(self):
         try:
             with open("savedgames/"+self.save_name.text()+".wdsave","xb") as file:
-                for i in [self.players,self.player,self.used_words]:
+                for i in [self.players,self.player,self.used_words,self.lastletter]:
                     pickle.dump(i,file)
                     self.phase2()
         except FileExistsError:
@@ -135,6 +136,7 @@ class kekapp(QMainWindow):
                     self.players=pickle.load(file)
                     self.player=pickle.load(file)
                     self.used_words=pickle.load(file)
+                    self.lastletter=pickle.load(file)
                 self.n=len(self.players)
                 self.phase2()
         else:
@@ -149,9 +151,15 @@ class kekapp(QMainWindow):
         self.do_wordcheck.setChecked(self.par_wordcheck.value)
         self.do_wordcheck.stateChanged.connect(self.par_wordcheck.switch)
 
+        self.do_lastlettercheck=QCheckBox("Следующее слово должно начинаться с буквы,\nна которую оканчивалось предыдущее")
+        self.widgets.append(self.do_lastlettercheck)
+        self.layout.addWidget(self.do_lastlettercheck,1,0,1,2)
+        self.do_lastlettercheck.setChecked(self.par_lastlettercheck.value)
+        self.do_lastlettercheck.stateChanged.connect(self.par_lastlettercheck.switch)
+
         self.back_btn=QPushButton("Готово")
         self.widgets.append(self.back_btn)
-        self.layout.addWidget(self.back_btn,1,1)
+        self.layout.addWidget(self.back_btn,2,1)
         self.back_btn.clicked.connect(self.goback)
 
     def goback(self):
@@ -172,6 +180,7 @@ class kekapp(QMainWindow):
                     self.players=[i+1 for i in range(self.n)]
                     self.player=0
                     self.used_words=[]
+                    self.lastletter=""
                     self.phase2()
             except ValueError:
                 msg=QMessageBox.warning(self,"Некорректные данные","Вы ввели не целое число, или не число вовсе.")
@@ -227,16 +236,17 @@ class kekapp(QMainWindow):
     def accept_clk(self):
         if self.get_word.text()=="":
             msg=QMessageBox.information(self,"Некорректный ввод","Введите слово")
-        if self.get_word.text() in self.used_words:
+        elif self.get_word.text() in self.used_words:
             msg=QMessageBox.information(self,"Уже было","Данное слово уже было введено")
-        elif (self.par_wordcheck.value and wordcheck(self.get_word.text())) or not self.par_wordcheck.value:
+        elif ((self.par_wordcheck.value and wordcheck(self.get_word.text())) or not self.par_wordcheck.value) and ((self.par_lastlettercheck.value and lastlettercheck(self.get_word.text(),self.lastletter)) or not self.par_lastlettercheck.value):
             self.used_words.append(self.get_word.text())
+            self.lastletter=lastwordset(self.get_word.text())
             self.player+=1
             if self.player==self.n:
                 self.player=0
             self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
         else:
-            msg=QMessageBox.information(self,"Незнакомое слово","Данного слова нет в нашем словаре")
+            msg=QMessageBox.information(self,"Некорректное слово","Данное слова не соответствует правилам игры, заданным в настройках")
         self.get_word.setText("")
 
     def clean_phase(self):
