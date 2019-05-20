@@ -198,6 +198,11 @@ class kekapp(QMainWindow):
         self.widgets.append(self.lbl2)
         self.layout.addWidget(self.lbl2,1,1,1,3)
 
+        if self.par_lastlettercheck.value:
+            self.lbl3=QLabel("Ваша буква: "+self.lastletter)
+            self.widgets.append(self.lbl3)
+            self.layout.addWidget(self.lbl3,0,3,1,2)
+
         self.get_word=QLineEdit()
         self.widgets.append(self.get_word)
         self.layout.addWidget(self.get_word,2,0,1,5)
@@ -245,6 +250,8 @@ class kekapp(QMainWindow):
             if self.player==self.n:
                 self.player=0
             self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
+            if self.par_lastlettercheck.value:
+                self.lbl3.setText("Ваша буква: "+self.lastletter)
         else:
             msg=QMessageBox.information(self,"Некорректное слово","Данное слова не соответствует правилам игры, заданным в настройках")
         self.get_word.setText("")
