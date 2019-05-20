@@ -3,6 +3,7 @@ import sys
 import pickle
 import os
 from wordchecker import wordcheck,lastlettercheck,lastwordset
+from list_generator import mt_list
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 
@@ -239,11 +240,12 @@ class kekapp(QMainWindow):
                 self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
 
     def accept_clk(self):
+        log=mt_list(self.par_wordcheck,wordcheck(self.get_word.text()),self.par_lastlettercheck,lastlettercheck(self.get_word.text(),self.lastletter))
         if self.get_word.text()=="":
             msg=QMessageBox.information(self,"Некорректный ввод","Введите слово")
         elif self.get_word.text() in self.used_words:
             msg=QMessageBox.information(self,"Уже было","Данное слово уже было введено")
-        elif ((self.par_wordcheck.value and wordcheck(self.get_word.text())) or not self.par_wordcheck.value) and ((self.par_lastlettercheck.value and lastlettercheck(self.get_word.text(),self.lastletter)) or not self.par_lastlettercheck.value):
+        elif log.check():
             self.used_words.append(self.get_word.text())
             self.lastletter=lastwordset(self.get_word.text())
             self.player+=1
@@ -253,7 +255,7 @@ class kekapp(QMainWindow):
             if self.par_lastlettercheck.value:
                 self.lbl3.setText("Ваша буква: "+self.lastletter)
         else:
-            msg=QMessageBox.information(self,"Некорректное слово","Данное слова не соответствует правилам игры, заданным в настройках")
+            msg=QMessageBox.information(self,"Некорректное слово",log.info())
         self.get_word.setText("")
 
     def clean_phase(self):

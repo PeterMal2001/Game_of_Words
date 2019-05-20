@@ -22,6 +22,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game_of_Words.py" />
+    <Compile Include="list_generator.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="set_default_settings.py">
       <SubType>Code</SubType>
     </Compile>
