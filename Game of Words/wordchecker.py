@@ -1,5 +1,6 @@
 def wordcheck(word):
-    with open("russian.txt","r") as file:
+    letter=word[0]
+    with open("dict/"+letter.lower()+".txt","r") as file:
         words=[line.strip() for line in file]
         if word in words:
             return True

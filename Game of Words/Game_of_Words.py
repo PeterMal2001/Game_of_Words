@@ -240,7 +240,7 @@ class kekapp(QMainWindow):
                 self.lbl1.setText("Ход игрока "+str(self.players[self.player])+":")
 
     def accept_clk(self):
-        log=mt_list(self.par_wordcheck,wordcheck(self.get_word.text()),self.par_lastlettercheck,lastlettercheck(self.get_word.text(),self.lastletter))
+        log=mt_list(self.par_wordcheck.value,wordcheck(self.get_word.text()),self.par_lastlettercheck.value,lastlettercheck(self.get_word.text(),self.lastletter))
         if self.get_word.text()=="":
             msg=QMessageBox.information(self,"Некорректный ввод","Введите слово")
         elif self.get_word.text() in self.used_words:

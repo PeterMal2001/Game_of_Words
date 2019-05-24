@@ -34,7 +34,6 @@
     <Content Include="attention.png" />
     <Content Include="logo.png" />
     <Content Include="qestion.png" />
-    <Content Include="russian.txt" />
     <Content Include="save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
