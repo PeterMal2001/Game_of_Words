@@ -5,7 +5,8 @@ import os
 from wordchecker import wordcheck,lastlettercheck,lastwordset
 from list_generator import mt_list
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon,QKeySequence
+from PyQt5.QtCore import Qt
 
 class kekapp(QMainWindow):
     def __init__(self):
@@ -66,6 +67,7 @@ class kekapp(QMainWindow):
         self.play=QPushButton("Играть")
         self.widgets.append(self.play)
         self.layout.addWidget(self.play,3,3,1,2)
+        self.play.setShortcut(QKeySequence(Qt.Key_Return))
         self.play.clicked.connect(self.pl_count_inserted)
 
         self.last_phase="phase1"
@@ -216,6 +218,7 @@ class kekapp(QMainWindow):
         self.accept_btn=QPushButton("Ввести")
         self.widgets.append(self.accept_btn)
         self.layout.addWidget(self.accept_btn,3,3,1,2)
+        self.accept_btn.setShortcut(QKeySequence(Qt.Key_Return))
         self.accept_btn.clicked.connect(self.accept_clk)
 
         self.last_phase="phase2"

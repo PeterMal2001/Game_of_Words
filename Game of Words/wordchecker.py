@@ -1,11 +1,14 @@
 def wordcheck(word):
     letter=word[0]
-    with open("dict/"+letter.lower()+".txt","r") as file:
-        words=[line.strip() for line in file]
-        if word in words:
-            return True
-        else:
-            return False
+    try:
+        with open("dict/"+letter.lower()+".txt","r") as file:
+            words=[line.strip() for line in file]
+            if word in words:
+                return True
+            else:
+                return False
+    except:
+        return False
 
 def lastlettercheck(word,letter):
     if word[0]==letter or word[0]==letter.upper() or letter=="":
