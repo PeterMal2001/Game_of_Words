@@ -1,4 +1,4 @@
-from sip import delete
+from PyQt5.sip import delete
 import sys
 import pickle
 import os
